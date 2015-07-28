@@ -80,9 +80,10 @@ class Utils{
 
 	public static function codeHtmlCreator($code){
 		$html = '';
+		$code = str_replace("\n\n", "\n", $code);
 		if(Utils::isTooLong($code, 'code')){
 			$id = md5($code);
-			$html .= "%t".'<a href="#'.$id.'" class="text-popup"><pre><code data-trim contenteditable>'."%n";
+			$html .= "%t".'<a href="#'.$id.'" class="text-popup code-preview"><pre><code data-trim contenteditable>'."%n";
 			$html .= "%t"."\t".Utils::returnShortText($code, 'code')."\nCLIQUEZ POUR VOIR LA SUITE..."."%n";
 			$html .= "%t".'</code></pre></a>'."%n";
 			$html .= "%t".'<pre id="'.$id.'" class="mfp-hide"><code data-trim contenteditable>'."%n";
@@ -228,11 +229,11 @@ class Utils{
 		}
 		return $str;
 	} 
-	public static function createPreviewOfPDF($pdfLink){
+	public static function createPreviewOfPDF($pdfLink, $path ='reveal'){
 		$im = new Imagick($pdfLink);
 		$im->setIteratorIndex(0);
 		$im->setCompression(Imagick::COMPRESSION_LZW);
 		$im->setCompressionQuality(90);
-		echo $im->writeImage('reveal/images/'.md5($pdfLink).'.png');
+		$im->writeImage($path.'/images/'.md5($pdfLink).'.png');
 	}
 }

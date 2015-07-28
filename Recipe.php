@@ -29,8 +29,9 @@ class Recipe{
 	private $techReqs;
 	private $projects;
 	private $url;
-
-	function __construct($recipeName = '',$url = ''){
+	private $path;
+	function __construct($recipeName = '',$url = '',$path = 'reveal'){
+		$this->path = $path;
 		$this->title = $recipeName;
 		$this->url = $url;
 		$this->definitions = array();
@@ -39,6 +40,9 @@ class Recipe{
 		$this->techReqs = array();
 		$this->projects = array();
 		$this->steps = array();
+	}
+	public function getPath(){
+		return $this->path;
 	}
 	public function getSteps(){
 		return $this->steps;

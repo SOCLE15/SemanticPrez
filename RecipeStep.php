@@ -4,10 +4,12 @@ require_once 'Utils.php';
 class RecipeStep{
 	private $html;
 	private $type;
+	private $path;
 
-	public function __construct($stepArray){
+	public function __construct($stepArray,$path = 'reveal'){
 		$this->html = "%t".'<h4>'.$stepArray['Titre'][0].'</h4>'."%n";
 		$this->html .= Utils::resumeHtmlCreator($stepArray['Description'][0]);
+		$this->path = $path;
 		switch ($stepArray['Contenu'][0]['fulltext']) {
 			case 'Document PDF':
 				$this->pdfConstructor($stepArray);
@@ -107,7 +109,7 @@ class RecipeStep{
 		if(array_key_exists(0, $stepArray['PDF'])){
 			$pdfLink = $this->retrieveFileWithName($stepArray['PDF'][0]);
 			//if(Utils::createPreviewOfPDF($pdfLink)){
-			Utils::createPreviewOfPDF($pdfLink);
+			Utils::createPreviewOfPDF($pdfLink, $this->path);
 				$this->html .= "%t".'<a class="iframe-popup" href="'.$pdfLink.'"><img class="image-recipe" alt="OPEN PDF" src="images/'.md5($pdfLink).'.png"/></a>'."%n";
 			//}
 		}

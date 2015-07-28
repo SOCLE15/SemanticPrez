@@ -1,13 +1,32 @@
 <?php
 require_once('Project.php');
 require_once('Recipe.php');
-if(isset($_GET['project']) && isset($_GET['file'])){
-    $project = new Project($_GET['project']);
-    $zip = new Zipper($project);
-    if($zip->createPrez($_GET['file'])==false){
-        echo 'BUG<br>';
+if(isset($_GET['action'])  && isset($_GET['project']) && strcmp($_GET['project'], "index") != 0){
+    $name = $_GET['project'];
+
+    if(strcmp($_GET['action'], 'show') == 0){
+        $project = new Project($name);
+        $zip = new Zipper($project);
+        if($project->isFound()){
+             if($zip->createPrezInReveal($name)==false){
+                echo 'BUG<br>';
+            }
+            $zip->create('reveal/',$name);
+            $zip->showPrez($name);
+        }
+    }elseif(strcmp($_GET['action'], 'zip')==0){
+        $project = new Project($name, md5($name));
+        $zip = new Zipper($project);
+        if($project->isFound()){
+            $zip->initNewFolder($name);
+            $zip->create(md5($name).'/', 'index');
+            $zip->Zip(md5($name),$name.'.zip', true);
+            $zip->sendZip($name.'.zip');
+        }
     }
-    $zip->modify($_GET['file']);
+}
+elseif(isset($_GET['project'])){
+    echo 'action?';
 } 
 elseif(isset($_GET['test'])){
     $project = new Project('SOCLE LAAS15');
@@ -19,7 +38,7 @@ elseif(isset($_GET['clean'])){
     $zip->clean();
 } 
 else{
-    echo 'Params get \'?project\' et \'?file\' requis';
+    echo 'Params get \'?project\' requis';
 }
 
 //$zip->modify('test');
@@ -35,25 +54,33 @@ class Zipper{
     private $description;
     private $steps;
     private $decalage = "";
+    private $found;
     function __construct($project = null){
         if($project != null){
             $project->retrieveData();
-            $this->title = $this->escapePercent($project->getTitle());
-            $this->definitions = $this->escapePercent($project->getDefinitions());
-            $this->ingredients = $this->escapePercent($project->getIngredients());
-            $this->funcReqs = $this->escapePercent($project->getFuncReqs());
-            $this->members = $this->escapePercent($project->getMembers());
-            $this->description = $this->escapePercent($project->getDescription());
-            $this->sujet = $this->escapePercent($project->getSujet());
-            $this->resume = $this->escapePercent($project->getResume());
-            $this->steps = $this->escapePercentInArray($project->getConception());
-            for($i=0;$i<4;$i++){
-                $this->decalage .= "\t";
+            if($project->isFound()){
+                $this->found =true;
+                $this->title = $this->escapePercent($project->getTitle());
+                $this->definitions = $this->escapePercent($project->getDefinitions());
+                $this->ingredients = $this->escapePercent($project->getIngredients());
+                $this->funcReqs = $this->escapePercent($project->getFuncReqs());
+                $this->members = $this->escapePercent($project->getMembers());
+                $this->description = $this->escapePercent($project->getDescription());
+                $this->sujet = $this->escapePercent($project->getSujet());
+                $this->resume = $this->escapePercent($project->getResume());
+                $this->steps = $this->escapePercentInArray($project->getConception());
+                for($i=0;$i<4;$i++){
+                    $this->decalage .= "\t";
+                }
             }
+            
         }
 
         }
-    public function createPrez($filename){
+    public function showPrez($title){
+        header('Location: reveal/'.$title.'.html');
+    }
+    public function createPrezInReveal($filename){
         return copy ( 'reveal/index.html' , 'reveal/'.$filename.'.html');
     }
     public function firstPage($content){
@@ -80,14 +107,13 @@ class Zipper{
         $string = rtrim($string, ", ");
         return str_replace('%MEMBERS%', $string, $content);
     }
-    public function modify($filename){
-        $file = 'reveal/'.$filename.'.html';
+    public function create($filepath, $filename){
+        $file = $filepath.$filename.'.html';
         $content = file_get_contents($file);
         $content = $this->firstPage($content);
         $content = $this->conception($content);
         $content = $this->funcReqs($content);
         file_put_contents($file, $content);
-        echo 'DONE';
     }
     public function clean(){
         shell_exec('ls reveal| grep  html |grep -v index | sed \'s/.*/reveal\/&/\' |xargs rm');
@@ -117,6 +143,7 @@ class Zipper{
         return $array;
     }
     public function test(){
+        header('Location: reveal/test.html');
         echo $this->title;
         echo '<br><br>';
         print_r($this->definitions);
@@ -140,5 +167,114 @@ class Zipper{
         }
         $content = str_replace('%BESFUNCSECTION%', $string, $content);
         return $content;
+    }
+    public function initNewFolder($title){
+        $source = "reveal";
+        $dest= md5($title);
+        if(!is_dir($dest)){
+            mkdir($dest, 0755);
+            foreach (
+               $iterator = new \RecursiveIteratorIterator(
+                  new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS),
+                  \RecursiveIteratorIterator::SELF_FIRST) as $item
+               ) {
+                if ($item->isDir()) {
+                    mkdir($dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+                } else {
+                    copy($item, $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName());
+                }
+
+            }
+        }
+    }
+    public function sendZip($file){
+        if (headers_sent()) {
+            echo 'HTTP header already sent';
+        } else {
+            if (!is_file($file)) {
+                header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+                echo 'File not found';
+            } else if (!is_readable($file)) {
+                header($_SERVER['SERVER_PROTOCOL'].' 403 Forbidden');
+                echo 'File not readable';
+            } else {
+                while (ob_get_level()) {
+                    ob_end_clean();
+                }
+                header($_SERVER['SERVER_PROTOCOL'].' 200 OK');
+                header("Content-Type: application/zip");
+                header("Content-Transfer-Encoding: Binary");
+                header("Content-Length: ".filesize($file));
+                header("Content-Disposition: attachment; filename=\"".basename($file)."\"");
+                readfile($file);
+                exit;
+            }
+        }
+    }
+    
+    public function Zip($source, $destination, $include_dir = false)
+    {
+
+        if (!extension_loaded('zip') || !file_exists($source)) {
+            return false;
+        }
+
+        if (file_exists($destination)) {
+            unlink ($destination);
+        }
+
+        $zip = new ZipArchive();
+        if (!$zip->open($destination, ZIPARCHIVE::CREATE)) {
+            return false;
+        }
+        $source = str_replace('\\', '/', realpath($source));
+
+        if (is_dir($source) === true)
+        {
+
+            $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($source), RecursiveIteratorIterator::SELF_FIRST);
+
+            if ($include_dir) {
+
+                $arr = explode("/",$source);
+                $maindir = $arr[count($arr)- 1];
+
+                $source = "";
+                for ($i=0; $i < count($arr) - 1; $i++) { 
+                    $source .= '/' . $arr[$i];
+                }
+
+                $source = substr($source, 1);
+
+                $zip->addEmptyDir($maindir);
+
+            }
+
+            foreach ($files as $file)
+            {
+                $file = str_replace('\\', '/', $file);
+
+            // Ignore "." and ".." folders
+                if( in_array(substr($file, strrpos($file, '/')+1), array('.', '..')) )
+                    continue;
+
+                $file = realpath($file);
+
+                if (is_dir($file) === true)
+                {
+                    $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
+                }
+                else if (is_file($file) === true)
+                {
+                    $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
+                }
+            }
+        }
+        else if (is_file($source) === true)
+        {
+            $zip->addFromString(basename($source), file_get_contents($source));
+        }
+
+        return $zip->close();
     }
 }

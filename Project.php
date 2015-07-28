@@ -28,9 +28,13 @@ class Project{
 	private $resume;
 	private $stepsConception;
 	private $numberOfSteps;
+	private $path;
+	private $found;
 
-	function __construct($projectName = ''){
+
+	function __construct($projectName = '',$path = 'reveal'){
 		$this->title = $projectName;
+		$this->path = $path;
 		$this->definitions = array();
 		$this->members = array();
 		$this->ingredients = array();
@@ -38,6 +42,15 @@ class Project{
 		$this->nonFuncReqs = array();
 		$this->stepsConception = array();
 
+	}
+	public function isFound(){
+		return $this->found;
+	}
+	public function setFound($found){
+		$this->found = $found;
+	}
+	public function getPath(){
+		return $this->path;
 	}
 	public function setDescription($description){
 		$this->description;

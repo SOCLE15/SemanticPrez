@@ -16,7 +16,6 @@ class RecipeParser{
 			//echo '<br><br>'.$jsonString.'<br><br>';
 			$results = json_decode($jsonString, true);
 			if (count($results) > 0) {
-				echo $recipe->getTitle();
 				$results = $results["query"]["results"];
 				$jsonRecipe = $results[$recipe->getTitle()]["printouts"];
 				$this->extractMembers($recipe, $jsonRecipe);
@@ -47,7 +46,7 @@ class RecipeParser{
 			$number = $recipe->getNumberSteps();
 			if($number>0){
 				for($i = 1; $i <= $number; $i++){
-					$step = new RecipeStep($results[$recipe->getTitle().'#Etape'.$i]['printouts']);
+					$step = new RecipeStep($results[$recipe->getTitle().'#Etape'.$i]['printouts'],$recipe->getPath());
 					$recipe->addStep($step, $i);
 				}
 			}

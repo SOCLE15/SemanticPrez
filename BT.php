@@ -4,9 +4,11 @@ class BT extends RemoteObject{
 	private $recipe;
 	private $done;
 	private $depth = 1;
+	private $path;
 
-	function __construct($dataArray){
+	function __construct($dataArray,$path = 'reveal'){
 		parent::__construct($dataArray);
+		$this->path = $path;
 		$this->BTs = array();
 		$this->done =false;
 	}
@@ -34,6 +36,7 @@ class BT extends RemoteObject{
 		return $this->depth;
 	}
 	public function extractRecipe($array){
+		
 		$this->recipe = new RemoteObject($array);
 	}
 	public function extractTechReqs($results, $array, $project){
@@ -64,7 +67,7 @@ class BT extends RemoteObject{
 		return $html;
 	}
 	public function htmlRecipe($string){
-        $recipe = new Recipe($this->recipe->getTitle(), $this->recipe->getUrl());
+        $recipe = new Recipe($this->recipe->getTitle(), $this->recipe->getUrl(),$this->path);
         $recipe->retrieveData();   
         $string .= $recipe->returnHTML(4);
         return $string;
@@ -78,7 +81,6 @@ class BT extends RemoteObject{
 		$string .='</ul>'."\n";
 		$string .= '</section>'."\n";
 		foreach ($this->BTs as $BT) {
-			echo $BT->getTitle();
 			$string .= $BT->htmlMe();
 		}
 		$string .= '<section>';

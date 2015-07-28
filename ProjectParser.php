@@ -18,21 +18,27 @@ class ProjectParser {
 			$results = json_decode($jsonString, true);
 			if (count($results) > 0) {
 				$results = $results["query"]["results"];
-				$jsonProject = $results[$project->getTitle()]["printouts"];
-				$this->extractNumberOfSteps($project, $results);
-				$this->extractSteps($project, $results);
-				$this->extractSujet($project, $jsonProject);
-				$this->extractResume($project, $jsonProject);
-				$this->extractDescription($project, $jsonProject);
-				$this->extractMembers($project, $jsonProject);
-				$this->extractIngredients($project, $jsonProject);
-				$this->extractDefinitions($project, $jsonProject);
-				$this->extractNonFunReqs($project, $jsonProject);
-				$this->extractFuncReqs($project, $jsonProject);
-				foreach ($project->getFuncReqs() as $el) {
-					$title = $el->getTitle();
-					$this->extractTechReq($project, $results, $title);
+				if(array_key_exists($project->getTitle(), $results)){
+					$project->setFound(true);
+					$jsonProject = $results[$project->getTitle()]["printouts"];
+					$this->extractNumberOfSteps($project, $results);
+					$this->extractSteps($project, $results);
+					$this->extractSujet($project, $jsonProject);
+					$this->extractResume($project, $jsonProject);
+					$this->extractDescription($project, $jsonProject);
+					$this->extractMembers($project, $jsonProject);
+					$this->extractIngredients($project, $jsonProject);
+					$this->extractDefinitions($project, $jsonProject);
+					$this->extractNonFunReqs($project, $jsonProject);
+					$this->extractFuncReqs($project, $jsonProject);
+					foreach ($project->getFuncReqs() as $el) {
+						$title = $el->getTitle();
+						$this->extractTechReq($project, $results, $title);
+					}
+				}else{
+					$project->setFound(false);
 				}
+				
 			}
 			return $project;
 		}
@@ -54,7 +60,6 @@ class ProjectParser {
 		public function extractNumberOfSteps($project, $results){
 			if(array_key_exists($project->getTitle().'#NombreEtapes', $results) && array_key_exists('Numero', $results[$project->getTitle().'#NombreEtapes']['printouts'])){
 				$project->setNumberOfSteps($results[$project->getTitle().'#NombreEtapes']['printouts']['Numero'][0]);
-				echo $project->getNumberOfSteps();
 			}else{
 				$project->setNumberOfSteps(0);
 			}
@@ -70,7 +75,7 @@ class ProjectParser {
 		}
 		public function extractTechReq($project, $results, $funcReqName){
 			foreach($results[$project->getTitle()."#".$funcReqName]["printouts"]["Contenu"] as $techReqArray){
-				$techReq = new BT($techReqArray);
+				$techReq = new BT($techReqArray,$project->getPath());
 				$techReq->parse($results, $project);
 				$project->addTechToFunc($techReq, $funcReqName);
 			}
