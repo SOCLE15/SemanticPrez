@@ -15,12 +15,12 @@ if(isset($_GET['action'])  && isset($_GET['project']) && strcmp($_GET['project']
             $zip->showPrez($name);
         }
     }elseif(strcmp($_GET['action'], 'zip')==0){
-        $project = new Project($name, md5($name));
+        $project = new Project($name, Zipper::dirName($name));
         $zip = new Zipper($project);
         if($project->isFound()){
             $zip->initNewFolder($name);
-            $zip->create(md5($name).'/', 'index');
-            $zip->Zip(md5($name),$name.'.zip', true);
+            $zip->create(Zipper::dirName($name).'/', 'index');
+            $zip->Zip(Zipper::dirName($name),$name.'.zip', true);
             $zip->sendZip($name.'.zip');
         }
     }
@@ -170,7 +170,7 @@ class Zipper{
     }
     public function initNewFolder($title){
         $source = "reveal";
-        $dest= md5($title);
+        $dest= $this->dirName($title);
         if(!is_dir($dest)){
             mkdir($dest, 0755);
             foreach (
@@ -277,4 +277,8 @@ class Zipper{
 
         return $zip->close();
     }
+    public static function dirName($name){
+        return str_replace(" ", "_", $name);
+    }
+
 }
