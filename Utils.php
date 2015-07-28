@@ -65,6 +65,10 @@ class Utils{
 		}
         return $html;
 	}
+	public static function conceptionToArray($conception){
+		$conception = str_replace("\n\n", "\n", $conception);
+		return split("\n", $conception);
+	}
 	public static function conceptionHtmlCreator($text, $decalage){
 		$html = '';
 		if(Utils::isTooLong($text)){

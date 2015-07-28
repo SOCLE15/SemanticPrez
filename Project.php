@@ -16,7 +16,7 @@ $socle->createGraph();*/
 */
 class Project{
 	private $objectsToQuery = "[[%PROJET%]] OR [[-Has subobject::%PROJET%]] OR [[Type::RecetteInBT]] [[Projet lié::%PROJET%]] OR [[Type::BTInBT]] [[Projet lié::%PROJET%]] ";
-	private $parametersToQuery = "|?A membre|?Contenu|?Besoin fonctionnel lié|?Type|?Ingrédient lié|?Définition liée|?Besoin technique lié|?Recette liée|?Besoin non fonctionnel lié|?A sujet|?A description|?A résumé|?Numero|?Text";
+	private $parametersToQuery = "|?Conception|?A membre|?Contenu|?Besoin fonctionnel lié|?Type|?Ingrédient lié|?Définition liée|?Besoin technique lié|?Recette liée|?Besoin non fonctionnel lié|?A sujet|?A description|?A résumé|?Numero|?Text";
 	private $title;
 	private $definitions;
 	private $ingredients;
@@ -27,7 +27,6 @@ class Project{
 	private $sujet;
 	private $resume;
 	private $stepsConception;
-	private $numberOfSteps;
 	private $path;
 	private $found;
 
@@ -40,7 +39,7 @@ class Project{
 		$this->ingredients = array();
 		$this->funcReqs = array();
 		$this->nonFuncReqs = array();
-		$this->stepsConception = array();
+		$this->stepsConception;
 
 	}
 	public function isFound(){
@@ -55,9 +54,6 @@ class Project{
 	public function setDescription($description){
 		$this->description;
 	}	
-	public function setNumberOfSteps($numberOfSteps){
-		$this->numberOfSteps = $numberOfSteps;
-	}
 	public function setResume($resume){
 		$this->resume = $resume;
 	}
@@ -66,6 +62,9 @@ class Project{
 	}
 	public function getConception(){
 		return $this->stepsConception;
+	}
+	public function setConception($conception){
+		return $this->stepsConception = $conception;
 	}
 	public function getResume(){
 		return $this->resume;
@@ -89,9 +88,6 @@ class Project{
 		return $this->members;
 	}
 
-	public function addStep($step, $number){
-		$this->stepsConception[$number] = $step;
-	}
 	public function addIngredient($ingredient){
 		array_push($this->ingredients,$ingredient);
 	}

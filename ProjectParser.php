@@ -21,8 +21,7 @@ class ProjectParser {
 				if(array_key_exists($project->getTitle(), $results)){
 					$project->setFound(true);
 					$jsonProject = $results[$project->getTitle()]["printouts"];
-					$this->extractNumberOfSteps($project, $results);
-					$this->extractSteps($project, $results);
+					$this->extractConception($project,$jsonProject);
 					$this->extractSujet($project, $jsonProject);
 					$this->extractResume($project, $jsonProject);
 					$this->extractDescription($project, $jsonProject);
@@ -41,6 +40,12 @@ class ProjectParser {
 				
 			}
 			return $project;
+		}
+		public function extractConception($project, $jsonProject){
+			if(array_key_exists(0, $jsonProject['Conception'])){
+				$steps = Utils::conceptionToArray($jsonProject['Conception'][0]);
+				$project->setConception($steps);
+			}
 		}
 		public function extractResume($project, $jsonProject){
 			if(array_key_exists(0, $jsonProject['A résumé']) ){
@@ -62,15 +67,6 @@ class ProjectParser {
 				$project->setNumberOfSteps($results[$project->getTitle().'#NombreEtapes']['printouts']['Numero'][0]);
 			}else{
 				$project->setNumberOfSteps(0);
-			}
-		}
-		public function extractSteps($project, $results){
-			$number = $project->getNumberOfSteps();
-			if($number>0){
-				for($i = 1; $i <= $number; $i++){
-					$step = $results[$project->getTitle().'#Etape'.$i]['printouts']['Texte'][0];
-					$project->addStep($step, $i);
-				}
 			}
 		}
 		public function extractTechReq($project, $results, $funcReqName){
