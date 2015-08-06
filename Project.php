@@ -32,7 +32,7 @@ class Project{
 
 
 	function __construct($projectName = '',$path = 'reveal'){
-		$this->title = $projectName;
+		$this->title = htmlspecialchars_decode($projectName, ENT_QUOTES);
 		$this->path = $path;
 		$this->definitions = array();
 		$this->members = array();

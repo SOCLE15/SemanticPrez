@@ -32,7 +32,7 @@ class Recipe{
 	private $path;
 	function __construct($recipeName = '',$url = '',$path = 'reveal'){
 		$this->path = $path;
-		$this->title = $recipeName;
+		$this->title = htmlspecialchars_decode($recipeName, ENT_QUOTES);
 		$this->url = $url;
 		$this->definitions = array();
 		$this->members = array();

@@ -148,11 +148,28 @@ class Zipper{
         echo '<br><br>';
         print_r($this->definitions);
     }
+    public function index($highlight){
+        $string = '';
+        $string .= $this->decalage.'<section>'."\n";
+        $string .= $this->decalage."\t".'<h2>Décomposition en besoins fonctionnels : </h2>';
+        $string .= $this->decalage."\t".'<ul>';
+        foreach ($this->funcReqs as $funcReq) {
+            $hlight = '';
+            $title = $funcReq->getTitle();
+            if(strcmp($highlight,$title )==0)
+                $hlight = ' class="next-red" ';
+            $string .= $this->decalage."\t\t".'<li><a '.$hlight.' href="#/'.md5($title).'">'.$title.'</a></li>';
+        }
+        $string .= $this->decalage."\t".'</ul>';
+        $string .= $this->decalage.'</section>'."\n";
+        return $string;
+    }
     public function funcReqs($content){
         $string = '';
         foreach($this->funcReqs as $funcReq){
+            $string .= $this->index($funcReq->getTitle());
             $techReqs = $funcReq->getTechReqs();
-            $string .= $this->decalage.'<section>'."\n";
+            $string .= $this->decalage.'<section id="'.md5($funcReq->getTitle()).'">'."\n";
             $string .= $this->decalage."\t".'<h2>Besoin fonctionnel : <br>'.$funcReq->getTitle().'</h2>'."\n";
             $string .= $this->decalage."\t".'Se décompose en : <br>'."\n";
             $string .= $this->decalage."\t".'<ul>'."\n";
