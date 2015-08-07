@@ -179,7 +179,7 @@ class Zipper{
                     $hlight = "";
                     if($value == $techReq)
                         $hlight = 'class="next-red"';
-                    $string .= $this->decalage."\t"."\t".'<li>'.'<a '.$hlight.'href="#/'.Zipper::pseudoHash($value->getTitle()).'"">'.$key."</a>".'</li>'."\n";
+                    $string .= $this->decalage."\t"."\t".'<li>'.'<a '.$hlight.'href="#/'.Zipper::pseudoHash($value->getTitle()).'">'.$key."</a>".'</li>'."\n";
                 }
                 $string .= $this->decalage."\t".'</ul>'."\n";
                 $string .=  $this->decalage.'</section>'."\n";
