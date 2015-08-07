@@ -158,7 +158,7 @@ class Zipper{
             $title = $funcReq->getTitle();
             if(strcmp($highlight,$title )==0)
                 $hlight = ' class="next-red" ';
-            $string .= $this->decalage."\t\t".'<li><a '.$hlight.' href="#/'.md5($title).'">'.$title.'</a></li>';
+            $string .= $this->decalage."\t\t".'<li><a '.$hlight.' href="#/'.Zipper::pseudoHash($title).'">'.$title.'</a></li>';
         }
         $string .= $this->decalage."\t".'</ul>';
         $string .= $this->decalage.'</section>'."\n";
@@ -169,16 +169,20 @@ class Zipper{
         foreach($this->funcReqs as $funcReq){
             $string .= $this->index($funcReq->getTitle());
             $techReqs = $funcReq->getTechReqs();
-            $string .= $this->decalage.'<section id="'.md5($funcReq->getTitle()).'">'."\n";
-            $string .= $this->decalage."\t".'<h2>Besoin fonctionnel : <br>'.$funcReq->getTitle().'</h2>'."\n";
-            $string .= $this->decalage."\t".'Se décompose en : <br>'."\n";
-            $string .= $this->decalage."\t".'<ul>'."\n";
-            foreach ($techReqs as $key => $value) {
-                $string .= $this->decalage."\t"."\t".'<li>'.'<a href="'.$value->getUrl().'" target="_blank">'.$key."</a>".'</li>'."\n";
-            }
-            $string .= $this->decalage."\t".'</ul>'."\n";
-            $string .=  $this->decalage.'</section>'."\n";
+
             foreach($techReqs as $techReq){
+                $string .= $this->decalage."<section id='".Zipper::pseudoHash($funcReq->getTitle())."'>"."\n";
+                $string .= $this->decalage."\t".'<h2>Besoin fonctionnel : <br>'.$funcReq->getTitle().'</h2>'."\n";
+                $string .= $this->decalage."\t".'Se décompose en : <br>'."\n";
+                $string .= $this->decalage."\t".'<ul>'."\n";
+                foreach ($techReqs as $key => $value) {
+                    $hlight = "";
+                    if($value == $techReq)
+                        $hlight = 'class="next-red"';
+                    $string .= $this->decalage."\t"."\t".'<li>'.'<a '.$hlight.'href="#/'.Zipper::pseudoHash($value->getTitle()).'"">'.$key."</a>".'</li>'."\n";
+                }
+                $string .= $this->decalage."\t".'</ul>'."\n";
+                $string .=  $this->decalage.'</section>'."\n";
                 $string .= $techReq->htmlMe();
             }
         }
@@ -296,6 +300,15 @@ class Zipper{
     }
     public static function dirName($name){
         return str_replace(" ", "_", $name);
+    }
+    public static function pseudoHash($str){
+        $str = str_replace("'", "",$str);
+        $str = str_replace(" ", "",$str);
+        $str = str_replace('"', "",$str);
+        $str = str_replace('é', "e",$str);
+        $str = str_replace('è', "e",$str);
+
+        return $str;
     }
 
 }

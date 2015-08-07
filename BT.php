@@ -49,7 +49,7 @@ class BT extends RemoteObject{
 		$this->depth = $depth+1;
 	}
 	public function htmlMe(){
-		$string ='<section>'."\n";
+		$string ='<section id="'.Zipper::pseudoHash($this->getTitle()).'">'."\n";
 		$string .= '%H%<a href="'.$this->getUrl().'" target="_blank">'.$this->getTitle()."</a><br>%/H%";
 		switch ($this->done) {
 			case true:
@@ -76,7 +76,7 @@ class BT extends RemoteObject{
 		$string .= '<h3>Se décompose en :</h3>';
 		$string .= '<ul>'."\n";
 		foreach ($this->BTs as $BT) {
-			$string.= '<li>'.'<a href="'.$BT->getUrl().'" target="_blank">'.$BT->getTitle()."</a>".'</li>'."\n";
+			$string.= '<li>'.'<a href="#/'.Zipper::pseudoHash($BT->getTitle()).'">'.$BT->getTitle()."</a>".'</li>'."\n";
 		}
 		$string .='</ul>'."\n";
 		$string .= '</section>'."\n";
