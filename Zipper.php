@@ -95,7 +95,6 @@ class Zipper{
         foreach ($this->steps as $value) {
             $string .= Utils::conceptionHtmlCreator($this->cleanWikiCode($value), $this->decalage);
         }
-
         return str_replace('%CONCEPTIONSECTION%', $string, $content);
     }
     public function eachMember($content){
@@ -166,25 +165,9 @@ class Zipper{
     }
     public function funcReqs($content){
         $string = '';
-        foreach($this->funcReqs as $funcReq){
+        foreach ($this->funcReqs as $funcReq) {
             $string .= $this->index($funcReq->getTitle());
-            $techReqs = $funcReq->getTechReqs();
-
-            foreach($techReqs as $techReq){
-                $string .= $this->decalage."<section id='".Zipper::pseudoHash($funcReq->getTitle())."'>"."\n";
-                $string .= $this->decalage."\t".'<h2>Besoin fonctionnel : <br>'.$funcReq->getTitle().'</h2>'."\n";
-                $string .= $this->decalage."\t".'Se décompose en : <br>'."\n";
-                $string .= $this->decalage."\t".'<ul>'."\n";
-                foreach ($techReqs as $key => $value) {
-                    $hlight = "";
-                    if($value == $techReq)
-                        $hlight = 'class="next-red"';
-                    $string .= $this->decalage."\t"."\t".'<li>'.'<a '.$hlight.' href="#/'.Zipper::pseudoHash($value->getTitle()).'">'.$key."</a>".'</li>'."\n";
-                }
-                $string .= $this->decalage."\t".'</ul>'."\n";
-                $string .=  $this->decalage.'</section>'."\n";
-                $string .= $techReq->htmlMe();
-            }
+            $string .= $funcReq->htmlMe();
         }
         $content = str_replace('%BESFUNCSECTION%', $string, $content);
         return $content;

@@ -1,16 +1,18 @@
 <?php
 require_once('RemoteObject.php');
 require_once('RecipeStep.php');
+require_once('Login.php');
 
 class RecipeParser{
-		private $apiURL = "http://smw.learning-socle.org/api.php?";
+		private $apiURL = "/api.php?";
 		private $actionASK = "ask";
 		private $queryPrefix = "&query=";
 		private $actionPrefix = "&action=";
 		private $formatPrefix = "&format=";
 		private $formatJSON = "json";
-		private $jsonService;
+		private $mn;
 		function __construct(){
+			$this->mn = new Login();
 		}
 		protected function jsonToObject($jsonString, $recipe){
 			//echo '<br><br>'.$jsonString.'<br><br>';
@@ -20,27 +22,13 @@ class RecipeParser{
 				$jsonRecipe = $results[$recipe->getTitle()]["printouts"];
 				$this->extractMembers($recipe, $jsonRecipe);
 				$this->extractIngredients($recipe, $jsonRecipe);
-				$this->extractFather($recipe, $jsonRecipe);
-				$this->extractDescription($recipe, $results);
 				$this->extractDefinitions($recipe, $jsonRecipe);
-				$this->extractTechReqs($recipe, $jsonRecipe);
 				$this->extractProjects($recipe, $jsonRecipe);
 				$this->extractNumberOfSteps($recipe, $results);
 				$this->extractSteps($recipe, $results);
 				$this->extractTheme($recipe, $jsonRecipe);
 			}
 			return $recipe;
-		}
-		public function extractFather($recipe, $jsonRecipe){
-			if(array_key_exists(0, $jsonRecipe["Découle du besoin technique"])){
-				$father = new RemoteObject($jsonRecipe["Découle du besoin technique"][0]);
-				$recipe->setFather($father);
-			}
-		}
-		public function extractDescription($recipe, $results){
-			if(array_key_exists($recipe->getFather()->getTitle(), $results) && array_key_exists('Description', $toto = $results[$recipe->getFather()->getTitle()]['printouts'])){
-				$recipe->setDescription($toto['Description'][0]);
-			}
 		}
 		public function extractSteps($recipe, $results){
 			$number = $recipe->getNumberSteps();
@@ -82,12 +70,6 @@ class RecipeParser{
 				$recipe->addDefinition($definition);
 			}
 		}
-		public function extractTechReqs($recipe, $jsonRecipe){
-			foreach($jsonRecipe["Besoin technique lié"] as $el){
-				$techReq = new RemoteObject($el);
-				$recipe->addTechReq($techReq);
-			}
-		}
 		public function extractProjects($recipe, $jsonRecipe){
 			foreach($jsonRecipe["Projet lié"] as $el){
 				$project = new RemoteObject($el);
@@ -101,7 +83,7 @@ class RecipeParser{
 		private function getObjectAsJson($object){
 			$mQuery=urlencode($object->getQuery());
 			$url=$this->apiURL.$this->actionPrefix.$this->actionASK.$this->queryPrefix.$mQuery.$this->formatPrefix.$this->formatJSON;
-			return file_get_contents($url);
+			return $this->mn->callApi($url);
 		}
 		public function getData(){
 			return json_encode($this);
