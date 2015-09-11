@@ -14,30 +14,26 @@ $socle->createGraph();
 *You should also give a look at the ProjectParser class 
 */
 class Recipe{
-	private $objectsToQuery = "[[%RECETTE%]] OR [[-Has subobject::%RECETTE%]] OR [[-Découle du besoin technique::%RECETTE%]] ";
-	private $parametersToQuery = "|?Texte|?PlantUML|?PDF|?Numero|?Image|?Service|?Video|?Contenu|?BesoinTechnique|?Code|?Langage|?Description
-		|?A membre|?Découle du besoin technique|?Besoin technique lié|?A thème|?Ingrédient lié|?Définition liée|?Projet lié|?Titre";
+	private $objectsToQuery = "[[%RECETTE%]] OR [[-Has subobject::%RECETTE%]] ";
+	private $parametersToQuery = "|?Texte|?PlantUML|?PDF|?Numero|?Image|?Service|?Video|?Contenu|?Code|?Langage|?Description
+		|?A membre|?A thème|?Ingrédient lié|?Définition liée|?Projet lié|?Titre";
 	private $title;
-	private $description;
 	private $numberSteps;
 	private $steps;
 	private $theme;
-	private $father;
 	private $definitions;
 	private $ingredients;
 	private $members;
-	private $techReqs;
 	private $projects;
 	private $url;
 	private $path;
 	function __construct($recipeName = '',$url = '',$path = 'reveal'){
 		$this->path = $path;
-		$this->title = htmlspecialchars_decode($recipeName, ENT_QUOTES);
+		$this->title = htmlspecialchars_decode($recipeName, ENT_QUOTES);		
 		$this->url = $url;
 		$this->definitions = array();
 		$this->members = array();
 		$this->ingredients = array();
-		$this->techReqs = array();
 		$this->projects = array();
 		$this->steps = array();
 	}
@@ -47,9 +43,7 @@ class Recipe{
 	public function getSteps(){
 		return $this->steps;
 	}	
-	public function getFather(){
-		return $this->father;
-	}
+
 	public function getMembers(){
 		return $this->members;
 	}	
@@ -71,23 +65,16 @@ class Recipe{
 	public function setTheme($theme){
 		$this->theme = $theme;
 	}
-	public function setFather($father){
-		$this->father = $father;
-	}
+
 	public function addIngredient($ingredient){
 		array_push($this->ingredients,$ingredient);
 	}
 	public function addDefinition($definition){
 		array_push($this->definitions,$definition);
 	}
-	public function setDescription($description){
-		$this->description = $description;
-	}
+
 	public function addMember($member){
 		array_push($this->members,$member);
-	}
-	public function addTechReq($techReq){
-		array_push($this->techReqs,$techReq);
 	}
 	public function addProject($project){
 		array_push($this->projects,$project);
@@ -106,9 +93,7 @@ class Recipe{
 	*@args 
 	*@return 
 	*/
-	public function getDescription(){
-		return $this->description;
-	}
+
 	public function retrieveData(){
 		$mParser = new RecipeParser;
 		$mParser->retrieveInfoForObject($this);

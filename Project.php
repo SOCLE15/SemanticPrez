@@ -16,7 +16,7 @@ $socle->createGraph();*/
 */
 class Project{
 	private $objectsToQuery = "[[%PROJET%]] OR [[-Has subobject::%PROJET%]] OR [[Type::RecetteInBT]] [[Projet lié::%PROJET%]] OR [[Type::BTInBT]] [[Projet lié::%PROJET%]] ";
-	private $parametersToQuery = "|?Conception|?A membre|?Contenu|?Besoin fonctionnel lié|?Type|?Ingrédient lié|?Définition liée|?Besoin technique lié|?Recette liée|?Besoin non fonctionnel lié|?A sujet|?A description|?A résumé|?Numero|?Text";
+	private $parametersToQuery = "|?Conception|?A membre|?ListeBF|?Contenu|?Type|?Ingrédient lié|?Définition liée|?Recette liée|?Besoin non fonctionnel lié|?A sujet|?A description|?A résumé|?Numero|?Text";
 	private $title;
 	private $definitions;
 	private $ingredients;
@@ -37,7 +37,6 @@ class Project{
 		$this->definitions = array();
 		$this->members = array();
 		$this->ingredients = array();
-		$this->funcReqs = array();
 		$this->nonFuncReqs = array();
 		$this->stepsConception;
 
@@ -100,9 +99,8 @@ class Project{
 	public function addNonFuncReq($nonFuncReq){
 		array_push($this->nonFuncReqs,$nonFuncReq);
 	}
-	public function addFuncReq($funcReqTitle){
-		$funcReq = new FunctionalRequirement($funcReqTitle);
-		$this->funcReqs[$funcReqTitle] = $funcReq;
+	public function setFuncReqs($funcReqsTree){
+		$this->funcReqs = $funcReqsTree;
 	}
 	public function addTechToFunc($techReq, $funcReqTitle){
 		$this->funcReqs[$funcReqTitle]->addTechReq($techReq);
@@ -146,14 +144,6 @@ class Project{
 	*@args $recipe to add (RemoteObject type) $title of the Technical requirement to link with
 	*@return 
 	*/
-	public function addRecipeToBF($recipe, $techReqTitle){
-		foreach ($this->funcReqs as $funcReq) { 
-			if($funcReq->hasTechReqByTitle($techReqTitle)){
-				$funcReq->linkRecipeWithTechReqTitle($recipe, $techReqTitle);
-				break;
-			}
-		}
-}
 	/*	
 	public function setDefinitions($resultsArray){
 		$this->definitions = $resultsArray["Définition liée"];
