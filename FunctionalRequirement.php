@@ -5,14 +5,16 @@ class FunctionalRequirement{
 	private $sons;
 	private $isLast;
 	private $recette;
+	private $path;
 
-	function __construct($title, $recette = null){
+	function __construct($title, $recette = null, $path = 'reveal'){
 		$this->title = trim($title);
 		$this->sons = array();
 		if($recette != null){
 			$this->isLast = true;
 			$this->recette = trim($recette);
 		}
+		$this->path = $path;
 	}
 	public function getSons(){
 		return $this->sons;
