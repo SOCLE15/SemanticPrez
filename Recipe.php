@@ -109,8 +109,6 @@ class Recipe{
 		}
 		//$ret = $dec.'<section>'.$n;
 		$ret .= $dec.$t.' - '.'<a href="'.$this->url.'" target="_blank">'.$this->title."</a>".$n;
-		$ret .=  $dec.$t.'<section>'. $n.$dec.$t.$t.'<i>'.$this->description.'</i><br><br>'.$n;
-		$ret .=  $dec.$t.'</section>'.$n;
 		foreach ($this->steps as $key => $value) {
 			$i++;
 			$ret .= $dec.$t.'<section>'.$n;
