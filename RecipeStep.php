@@ -5,11 +5,13 @@ class RecipeStep{
 	private $html;
 	private $type;
 	private $path;
+	private $imageParser;
 
 	public function __construct($stepArray,$path = 'reveal'){
 		$this->html = "%t".'<h4>'.$stepArray['Titre'][0].'</h4>'."%n";
 		$this->html .= Utils::resumeHtmlCreator($stepArray['Description'][0]);
 		$this->path = $path;
+		$this->imageParser = new ImageAndPDFParser;
 		switch ($stepArray['Contenu'][0]['fulltext']) {
 			case 'Document PDF':
 				$this->pdfConstructor($stepArray);
@@ -130,7 +132,7 @@ class RecipeStep{
 	}
 	//TODO : vimeo teachertube ted slideshare
 	public function retrieveFileWithName($name){
-		return ImageAndPDFParser::getURL($name);
+		return $this->imageParser->getURL($name);
 	}
 	public function youtubeConstructor($stepArray){
 		$this->html .= "%t".'<a class="video" href="http://www.youtube.com/watch?v='.$stepArray['Video'][0].'"><img src="http://img.youtube.com/vi/'.$stepArray['Video'][0].'/0.jpg" alt="" class="thumbnail"/></a>';
