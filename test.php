@@ -1,4 +1,2 @@
 <?php
-require_once "Recipe.php";
-$project = new Recipe("Tutorial: Installer et configurer MediaWiki");
-$project->retrieveData();
+echo urldecode(urldecode("Guide%2Bd%2526%252339%253Butilisation"));

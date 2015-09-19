@@ -78,10 +78,10 @@ class Zipper{
 
         }
     public function showPrez($title){
-        header('Location: reveal/'.$title.'.html');
+        header('Location: reveal/'.$this->makeItSimple($title).'.html');
     }
     public function createPrezInReveal($filename){
-        return copy ( 'reveal/index.html' , 'reveal/'.$filename.'.html');
+        return copy ( 'reveal/index.html' , 'reveal/'.$this->makeItSimple($filename).'.html');
     }
     public function firstPage($content){
         $content = str_replace('%TITRE%', $this->title, $content);
@@ -190,6 +190,9 @@ class Zipper{
 
             }
         }
+    }
+    public function makeItSimple($str){
+        return $str;
     }
     public function sendZip($file){
         if (headers_sent()) {

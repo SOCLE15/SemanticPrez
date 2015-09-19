@@ -2,7 +2,7 @@
 	// if (empty($argv[1])) {
 	//  print("Specify the part of the URL after 'https://my.private.wiki/wiki/index.php/' as argument.\n");
 	//  exit;
-	// }
+	// }d
 include "Snoopy.class.php";
 class Login{
 	private $snoopy;
@@ -15,7 +15,7 @@ class Login{
 
 		# Login via api.php
 		$this->login_vars['action'] = "login";
-		$this->login_vars['lgname'] = "LOGIN";
+		$this->login_vars['lgname'] = "NAME";
 		$this->login_vars['lgpassword'] = "MDP";
 		$this->login_vars['format'] = "php";
 		## First part
